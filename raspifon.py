@@ -1,12 +1,11 @@
 import logging
+import configparser
+import json
 
 from recorder import Recorder
 from threading import Thread
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-allowed_users = [
-    10203040,
-    ]
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
@@ -18,6 +17,7 @@ recorder = None
 class Raspifon:
     user_id = None
     bot = None
+    allowed_users = []
 
     # Start handler to open new convertion with the bot.
     def start(self, update, context):
@@ -36,7 +36,7 @@ class Raspifon:
 
         logger.info('Entering watch "%s"', user['id'])
 
-        if user['id'] in allowed_users:
+        if user['id'] in self.allowed_users:
             if self.user_id is None:
                 update.message.reply_text('starting to watch')
 
@@ -74,8 +74,12 @@ class Raspifon:
 
 
     def startBot(self):
+        config = configparser.ConfigParser()
+        config.read('settings.ini')
+        self.allowed_users = json.loads(config['DEFAULT']['AllowedUsers'])
+
         # Create the Updater
-        updater = Updater("0000:APITOKEN-000", use_context=True)
+        updater = Updater(config['DEFAULT']['Token'], use_context=True)
 
         # Get the dispatcher to register handlers
         dp = updater.dispatcher
