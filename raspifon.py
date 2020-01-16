@@ -99,10 +99,20 @@ class Raspifon:
         # Get the dispatcher to register handlers
         dp = updater.dispatcher
 
-        # on different commands - answer in Telegram
+        # start with the bot command
         dp.add_handler(CommandHandler("start", self.start))
+
+        # start audio watch
+        dp.add_handler(CommandHandler("w", self.watch))
         dp.add_handler(CommandHandler("watch", self.watch))
+
+        # stop audio watch
         dp.add_handler(CommandHandler("off", self.off))
+        dp.add_handler(CommandHandler("stop", self.off))
+
+        # take a picture
+        dp.add_handler(CommandHandler("p", self.picture))
+        dp.add_handler(CommandHandler("pic", self.picture))
         dp.add_handler(CommandHandler("picture", self.picture))
 
         self.bot = dp.bot
@@ -122,7 +132,7 @@ class Raspifon:
 # Create the telegram bot
 raspifon = Raspifon()
 
-# Create the recorder
+# Create the audio recorder
 recorder = Recorder(raspifon)
 
 snapshot = Snapshot()
