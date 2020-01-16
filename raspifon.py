@@ -34,7 +34,7 @@ class Raspifon:
                 user['username'],
                 user['id'])
 
-        update.message.reply_text('Hi {}, welcome on blaui Tünta'.
+        update.message.reply_text('Hi {}'.
                 format(user['first_name']))
 
         print('')
@@ -109,7 +109,6 @@ class Raspifon:
             else:
                 logger.info('recorder still on')
 
-                update.message.reply_text('raspifon turned off')
                 update.message.reply_text('but raspifon is still running')
 
         else:
