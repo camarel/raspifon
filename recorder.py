@@ -22,6 +22,7 @@ class Recorder:
     directory = r'./records' # directory to save the files
     threshold = 80 # volume threshold to start recording
     timeout   = 3  # seconds to wait after last threshold
+    max_sec   = 10 # maximum time to record, then send message
 
     # rms settings
     swidth = 2
@@ -44,7 +45,7 @@ class Recorder:
 
     def __init__(self, bot, dev_index):
         self.bot = bot
-        self.dev_index = dev_index
+        self.dev_index = int(dev_index)
 
 
     def record(self):
@@ -52,8 +53,9 @@ class Recorder:
         rec = []
         current = time.time()
         end = time.time() + self.timeout
+        maxTime = time.time() + self.max_sec
 
-        while current <= end:
+        while current <= end and current <= maxTime:
             data = self.stream.read(self.chunk, exception_on_overflow = False)
             if self.rms(data) >= self.threshold: end = time.time() + self.timeout
 
