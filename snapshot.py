@@ -2,12 +2,11 @@ import cv2
 from io import BytesIO
 
 class Snapshot:
-    camera_port  = 0
     image_width  = 1280
     image_height = 720
 
-    def __init__(self):
-        self.camera = cv2.VideoCapture(self.camera_port)
+    def __init__(self, camera_port):
+        self.camera = cv2.VideoCapture(int(camera_port))
         
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.image_width)
         self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.image_height)

@@ -159,6 +159,7 @@ raspifon = Raspifon()
 # Create the audio recorder
 recorder = Recorder(raspifon, config['DEFAULT']['AudioDeviceIndex'])
 
-snapshot = Snapshot()
+# Create the snapshot
+snapshot = Snapshot(config['DEFAULT']['CameraDeviceIndex'])
 
 raspifon.startBot()
