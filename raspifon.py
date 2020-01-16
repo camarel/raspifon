@@ -3,6 +3,7 @@ import configparser
 import json
 
 from recorder import Recorder
+from snapshot import Snapshot
 from threading import Thread
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -13,6 +14,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
 
 logger = logging.getLogger(__name__)
 recorder = None
+snapshot = None
 
 class Raspifon:
     user_id = None
@@ -69,6 +71,19 @@ class Raspifon:
             recorder.stop()
 
 
+    def picture(self, update, context):
+        if user['id'] in self.allowed_users:
+            filename = snapshot.takePicture()
+
+            if filename is None:
+                logger.error('could not get filename')
+            else:
+                user = update.message.from_user
+                self.bot.send_photo(chat_id=user['id'], photo=open(filename, 'rb'))
+        else:
+            update.message.reply_text('you are not allowed to run this service')
+
+
     def error(self, update, context):
         logger.warning('Update "%s" caused error "%s"', update, context.error)
 
@@ -88,6 +103,7 @@ class Raspifon:
         dp.add_handler(CommandHandler("start", self.start))
         dp.add_handler(CommandHandler("watch", self.watch))
         dp.add_handler(CommandHandler("off", self.off))
+        dp.add_handler(CommandHandler("picture", self.picture))
 
         self.bot = dp.bot
 
@@ -108,5 +124,7 @@ raspifon = Raspifon()
 
 # Create the recorder
 recorder = Recorder(raspifon)
+
+snapshot = Snapshot()
 
 raspifon.startBot()
