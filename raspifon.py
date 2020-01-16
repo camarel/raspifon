@@ -17,9 +17,9 @@ recorder = None
 snapshot = None
 
 class Raspifon:
-    user_id = None
     bot = None
     allowed_users = []
+    watching_users = []
 
     # Start handler to open new convertion with the bot.
     def start(self, update, context):
@@ -35,40 +35,60 @@ class Raspifon:
     # Handler to start watching and recording audio.
     def watch(self, update, context):
         user = update.message.from_user
+        logger.info('Entering watch - %s', user['id'])
 
-        logger.info('Entering watch "%s"', user['id'])
-
+        # check user permissions
         if user['id'] in self.allowed_users:
-            if self.user_id is None:
+            # check if user is already watching
+            if user['id'] in self.watching_users:
+                update.message.reply_text('already watching')
+            else:
+                # start new recorder if first user
+                if len(self.watching_users) == 0:
+                    self.recorder_thread = Thread(target = recorder.listen)
+                    self.recorder_thread.start()
+
+                self.watching_users.append(user['id'])
                 update.message.reply_text('starting to watch')
 
-                thread = Thread(target = recorder.listen)
-                thread.start()
-
-                self.user_id = user['id']
-            else:
-                update.message.reply_text('already watching dude')
         else:
             update.message.reply_text('you are not allowed to run this service')
+
+        logger.info('currently watching users: %s', self.watching_users)
 
 
     # Callback when an audio is recorded
     def callback(self, filename):
-        if self.user_id is None:
+        if len(self.watching_users) == 0:
             logger.info('no one watching')
         else:
             logger.info('sending voice message "%s"', filename)
-            self.bot.send_voice(chat_id=self.user_id, voice=open(filename, 'rb'))
+
+            for userId in self.watching_users:
+                self.bot.send_voice(chat_id=userId, voice=open(filename, 'rb'))
 
 
     # Turn the watch handler off.
     def off(self, update, context):
-        if self.user_id is None:
-            update.message.reply_text('nothing running')
-        else:
-            self.user_id = None
+        user = update.message.from_user
+        logger.info('stop watching - %s', user['id'])
+
+        if user['id'] in self.watching_users:
+            self.watching_users.remove(user['id'])
             update.message.reply_text('stopped watching')
-            recorder.stop()
+
+            if len(self.watching_users) == 0:
+                logger.info('turning recorder off')
+                update.message.reply_text('raspifon turned off')
+                recorder.stop()
+            else:
+                logger.info('recorder still on')
+
+                update.message.reply_text('raspifon turned off')
+                update.message.reply_text('but raspifon is still running')
+
+        else:
+            update.message.reply_text('you have not been watching')
 
 
     def picture(self, update, context):

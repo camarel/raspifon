@@ -9,8 +9,10 @@ Install the following dependencies:
 
 ```
 sudo apt-get install portaudio19-dev python-pyaudio python3-pyaudio
-sudo pip3 install PyAudio
-sudo pip3 install AudioSegment
+pip3 install PyAudio
+pip3 install AudioSegment
+pip3 install opencv-python
+pip3 install python-telegram-bot
 ```
 
 Create the directory where the audio files will be stored:
