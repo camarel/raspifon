@@ -13,6 +13,10 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+
+config = configparser.ConfigParser()
+config.read('settings.ini')
+
 recorder = None
 snapshot = None
 
@@ -92,14 +96,16 @@ class Raspifon:
 
 
     def picture(self, update, context):
+        user = update.message.from_user
+
         if user['id'] in self.allowed_users:
             filename = snapshot.takePicture()
 
             if filename is None:
                 logger.error('could not get filename')
             else:
-                user = update.message.from_user
                 self.bot.send_photo(chat_id=user['id'], photo=open(filename, 'rb'))
+
         else:
             update.message.reply_text('you are not allowed to run this service')
 
@@ -109,8 +115,6 @@ class Raspifon:
 
 
     def startBot(self):
-        config = configparser.ConfigParser()
-        config.read('settings.ini')
         self.allowed_users = json.loads(config['DEFAULT']['AllowedUsers'])
 
         # Create the Updater
@@ -153,7 +157,7 @@ class Raspifon:
 raspifon = Raspifon()
 
 # Create the audio recorder
-recorder = Recorder(raspifon)
+recorder = Recorder(raspifon, config['DEFAULT']['AudioDeviceIndex'])
 
 snapshot = Snapshot()
 

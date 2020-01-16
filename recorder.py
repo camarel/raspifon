@@ -13,7 +13,6 @@ from pydub import AudioSegment
 
 class Recorder:
     # audio settings
-    dev_index = 2    # device index found by p.get_device_info_by_index(ii)
     chunk     = 1024  # record in chunks of 1024 samples
     channels  = 1     # number of audio channels
     rate      = 16000 # record at 16000 frames per second
@@ -43,8 +42,9 @@ class Recorder:
         return rms * 1000
 
 
-    def __init__(self, bot):
+    def __init__(self, bot, dev_index):
         self.bot = bot
+        self.dev_index = dev_index
 
 
     def record(self):
