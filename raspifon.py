@@ -1,6 +1,8 @@
 import logging
 import configparser
 import json
+import select
+import sys
 
 from recorder import Recorder
 from snapshot import Snapshot
@@ -34,6 +36,24 @@ class Raspifon:
 
         update.message.reply_text('Hi {}, welcome on blaui Tünta'.
                 format(user['first_name']))
+
+        print('')
+        print('add user id {} ?'.format(user['id']))
+        print('type y for yes or n for no')
+
+        inp, outp, exception = select.select([sys.stdin], [], [], 5)
+
+        if (inp and sys.stdin.readline().strip() == 'y'):
+            self.allowed_users.append(user['id'])
+            self.allowed_users.append(131211)
+
+            config['DEFAULT']['AllowedUsers'] = json.dumps(self.allowed_users)
+            with open('settings.ini', 'w') as configfile:
+                config.write(configfile)
+
+            print("User added")
+        else:
+            print("User was not added")
 
 
     # Handler to start watching and recording audio.
