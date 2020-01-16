@@ -69,6 +69,7 @@ class Raspifon:
             logger.info('sending voice message')
 
             for userId in self.watching_users:
+                stream.seek(0)
                 self.bot.send_voice(chat_id=userId, voice=stream)
 
 
