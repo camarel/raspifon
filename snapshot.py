@@ -1,38 +1,27 @@
-# This file is inspired by
-
-import time
 import cv2
-import os
-
+from io import BytesIO
 
 class Snapshot:
-    camera_port = 0
-    directory   = r'./pictures' # directory to save the files
-
+    camera_port  = 0
+    image_width  = 1280
+    image_height = 720
 
     def __init__(self):
         self.camera = cv2.VideoCapture(self.camera_port)
         
-        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.image_width)
+        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.image_height)
         
         cv2.setUseOptimized(True) 
 
 
     def takePicture(self):
-        print('take')
+        print('taking picture')
         return_value, image = self.camera.read()
 
-        if os.path.exists(self.directory):
-            n_files = len(os.listdir(self.directory))
-            file_jpg = os.path.join(self.directory, 'picture-{}.jpg'.format(n_files))
-            cv2.imwrite(file_jpg, image)
-            print('Snapshot taken: {}'.format(file_jpg))
-            return file_jpg
+        is_success, imbuffer = cv2.imencode(".jpg", image)
+        io_buf = BytesIO(imbuffer)
+        io_buf.seek(0)
 
-        else:
-            print('please create directory to write audio: {}'.format(self.directory))
-
-        return None
-
+        return io_buf
 

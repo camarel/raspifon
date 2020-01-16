@@ -99,12 +99,12 @@ class Raspifon:
         user = update.message.from_user
 
         if user['id'] in self.allowed_users:
-            filename = snapshot.takePicture()
+            stream = snapshot.takePicture()
 
-            if filename is None:
-                logger.error('could not get filename')
+            if stream is None:
+                logger.error('could not get picture')
             else:
-                self.bot.send_photo(chat_id=user['id'], photo=open(filename, 'rb'))
+                self.bot.send_photo(chat_id=user['id'], photo=stream)
 
         else:
             update.message.reply_text('you are not allowed to run this service')
