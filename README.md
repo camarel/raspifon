@@ -17,12 +17,6 @@ pip3 install opencv-python
 pip3 install python-telegram-bot
 ```
 
-Create the directory where the audio files will be stored:
-
-```
-mkdir records
-```
-
 ## Sound device
 
 Check the audio device that shall be used for recording:
