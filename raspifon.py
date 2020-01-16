@@ -62,14 +62,14 @@ class Raspifon:
 
 
     # Callback when an audio is recorded
-    def callback(self, filename):
+    def callback(self, stream):
         if len(self.watching_users) == 0:
             logger.info('no one watching')
         else:
-            logger.info('sending voice message "%s"', filename)
+            logger.info('sending voice message')
 
             for userId in self.watching_users:
-                self.bot.send_voice(chat_id=userId, voice=open(filename, 'rb'))
+                self.bot.send_voice(chat_id=userId, voice=stream)
 
 
     # Turn the watch handler off.

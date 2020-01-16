@@ -6,8 +6,7 @@ import math
 import struct
 import wave
 import time
-import os
-
+from io import BytesIO
 from pydub import AudioSegment
 
 
@@ -19,7 +18,6 @@ class Recorder:
     sf        = pyaudio.paInt16 # 16 bits per sample
 
     # auto record settings
-    directory = r'./records' # directory to save the files
     threshold = 80 # volume threshold to start recording
     timeout   = 3  # seconds to wait after last threshold
     max_sec   = 10 # maximum time to record, then send message
@@ -65,32 +63,24 @@ class Recorder:
 
 
     def write(self, recording):
-        if os.path.exists(self.directory):
-            n_files = len(os.listdir(self.directory))
-            file_wav = os.path.join(self.directory, '{}.wav'.format(n_files))
-            file_mp3 = os.path.join(self.directory, '{}.mp3'.format(n_files))
+       # creating wave
+       wav = BytesIO()
+       wf = wave.open(wav, 'wb')
+       wf.setnchannels(self.channels)
+       wf.setsampwidth(self.p.get_sample_size(self.sf))
+       wf.setframerate(self.rate)
+       wf.writeframes(recording)
+       wf.close()
+       wav.seek(0)
 
-            # creating wave file
-            wf = wave.open(file_wav, 'wb')
-            wf.setnchannels(self.channels)
-            wf.setsampwidth(self.p.get_sample_size(self.sf))
-            wf.setframerate(self.rate)
-            wf.writeframes(recording)
-            wf.close()
-            print('Written to file: {}'.format(file_wav))
+       # converting to mp3
+       mp3 = BytesIO()
+       sound = AudioSegment.from_file(wav, format="wav")
+       sound.export(mp3, format='mp3')
+       mp3.seek(0)
 
-            # converting to mp3
-            sound = AudioSegment.from_wav(file_wav)
-            sound.export(file_mp3, format='mp3')
-            print('Converted to : {}'.format(file_mp3))
-
-            # remove wav file
-            os.remove(file_wav)
-
-            self.bot.callback(file_mp3)
-            print('Returning to listening')
-        else:
-            print('please create directory to write audio: {}'.format(self.directory))
+       self.bot.callback(mp3)
+       print('Returning to listening')
 
 
     def listen(self):
