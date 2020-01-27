@@ -55,6 +55,17 @@ class Raspifon:
         else:
             print("User was not added")
 
+    def help(self, update, context):
+        helpText = ('Available commands:\n' +
+        '/watch - start watching\n' +
+        '/off - stop watching\n' +
+        '/pic - take a picture\n\n' +
+        'Or the following short forms:\n' +
+        '/w - start watching\n' +
+        '/o - stop watching\n' +
+        '/p - take a picture')
+
+        update.message.reply_text(helpText)
 
     # Handler to start watching and recording audio.
     def watch(self, update, context):
@@ -146,11 +157,16 @@ class Raspifon:
         # start with the bot command
         dp.add_handler(CommandHandler("start", self.start))
 
+        # help command
+        dp.add_handler(CommandHandler("h", self.help))
+        dp.add_handler(CommandHandler("help", self.help))
+
         # start audio watch
         dp.add_handler(CommandHandler("w", self.watch))
         dp.add_handler(CommandHandler("watch", self.watch))
 
         # stop audio watch
+        dp.add_handler(CommandHandler("o", self.off))
         dp.add_handler(CommandHandler("off", self.off))
         dp.add_handler(CommandHandler("stop", self.off))
 
