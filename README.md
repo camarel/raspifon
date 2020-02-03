@@ -10,7 +10,7 @@ To be able to use it, you must create a new Telegram bot.
 Install the following dependencies:
 
 ```
-sudo apt-get install portaudio19-dev python-pyaudio python3-pyaudio
+sudo apt-get install portaudio19-dev python-pyaudio python3-pyaudio ffmpeg
 pip3 install PyAudio
 pip3 install AudioSegment
 pip3 install opencv-python
@@ -26,6 +26,22 @@ python3 check-audio-devices.py
 ```
 
 And set the index to AudioDeviceIndex in settings.ini
+
+To get rid of error messages caused by PyAudio, the following lines can be removed or commented out of /usr/share/alsa/alsa.conf:
+
+```
+# pcm.front cards.pcm.front
+# pcm.rear cards.pcm.rear
+# pcm.center_lfe cards.pcm.center_lfe
+# pcm.side cards.pcm.side
+# pcm.surround21 cards.pcm.surround21
+# pcm.surround40 cards.pcm.surround40
+# pcm.surround41 cards.pcm.surround41
+# pcm.surround50 cards.pcm.surround50
+# pcm.surround51 cards.pcm.surround51
+# pcm.surround71 cards.pcm.surround71
+```
+
 
 ## Telegram Bot
 
