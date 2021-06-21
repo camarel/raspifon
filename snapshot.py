@@ -6,21 +6,21 @@ class Snapshot:
     image_height = 720
 
     def __init__(self, camera_port):
-        self.camera = cv2.VideoCapture(int(camera_port))
-        
-        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.image_width)
-        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.image_height)
-        
-        cv2.setUseOptimized(True) 
-
+        self.camera_port = int(camera_port)
 
     def takePicture(self):
-        print('taking picture')
-        return_value, image = self.camera.read()
+        camera = cv2.VideoCapture(self.camera_port)
 
-        is_success, imbuffer = cv2.imencode(".jpg", image)
-        io_buf = BytesIO(imbuffer)
-        io_buf.seek(0)
+        camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.image_width)
+        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.image_height)
+        camera.set(cv2.CAP_PROP_SATURATION, 50.0)
 
-        return io_buf
+        cv2.setUseOptimized(True)
+
+        return_value, image = camera.read()
+
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 70]
+        imbytes = cv2.imencode('.jpg', image, encode_param)[1].tobytes()
+
+        return imbytes
 
